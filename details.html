@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подробнее | eTurkey</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--gold:#C9A84C;--gold2:#F0D080;--dark:#0A0C10;--dark2:#12151C;--dark3:#1A1F2B;--light:#F8F4EE}
+        body{background:var(--dark);color:var(--light);font-family:'Segoe UI',sans-serif}
+        .nav{position:sticky;top:0;background:rgba(10,12,16,0.95);padding:14px 40px;display:flex;justify-content:space-between;backdrop-filter:blur(20px)}
+        .logo{display:flex;gap:10px;cursor:pointer}
+        .logo-box{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:7px;display:flex;align-items:center;justify-content:center}
+        .logo-text{font-size:17px;font-weight:600}
+        .logo-text span{color:var(--gold)}
+        .nav-links{display:flex;gap:28px;list-style:none}
+        .nav-links a{color:rgba(248,244,238,0.65);text-decoration:none}
+        .nav-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;padding:9px 22px;border-radius:6px;border:none;cursor:pointer}
+        .btn-g{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;padding:12px 28px;border-radius:8px;border:none;cursor:pointer}
+        .detail-container{max-width:1100px;margin:40px auto;padding:0 20px}
+        .detail-card{background:var(--dark3);border-radius:24px;overflow:hidden}
+        .detail-img{width:100%;max-height:500px;object-fit:cover}
+        .detail-body{padding:32px}
+        .detail-title{font-size:28px;font-weight:700}
+        .detail-price{font-size:26px;color:var(--gold);margin:12px 0}
+        .spec-item{background:rgba(201,168,76,.1);display:inline-block;padding:6px 14px;border-radius:30px;margin-right:12px;margin-bottom:12px}
+        .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+        .gallery img{width:100%;height:180px;object-fit:cover;border-radius:12px}
+        @media (max-width:700px){.gallery{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<nav class="nav">
+    <div class="logo" onclick="location.href='index.html'"><div class="logo-box">ET</div><div class="logo-text">e<span>turkey</span>.ru</div></div>
+    <ul class="nav-links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="about.html">О компании</a></li>
+        <li><a href="catalog.html">Объекты</a></li>
+        <li><a href="index.html#servicesSection">Услуги</a></li>
+        <li><a href="index.html#contactSection">Контакты</a></li>
+    </ul>
+    <button class="nav-btn" onclick="location.href='index.html#contactSection'">Консультация</button>
+</nav>
+<div class="detail-container" id="detailContainer">Загрузка...</div>
+<script>
+const details = [
+{id:0,name:"Эксклюзивная вилла 8+2 в Коньяалты",area:"750 м²",rooms:"8+2",district:"Коньяалты",price:"3 250 000 €",desc:"Роскошная вилла с собственным садом, бассейном и видом на море. Полностью меблирована, отделка премиум-класса.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/f54/1000_300_1/photo1658496515 (1).jpeg","https://www.eturkey.ru/upload/resize_cache/iblock/52f/1000_300_1/photo1658496515 (2).jpeg"]},
+{id:1,name:"Роскошные виллы в Анталье",area:"183 м²",rooms:"3+1",district:"Коньяалты",price:"507 640 €",desc:"Современные виллы в закрытом комплексе. Отличный вариант для инвестиций.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/d97/dixct69wmkyodu2eol3cn1solizhvb8c/350_350_1/LOTUS ANTALYA0.jpg"]},
+{id:2,name:"Люксовые виллы — подходит под гражданство",area:"675 м²",rooms:"5+1",district:"Коньяалты",price:"1 600 000 €",desc:"Виллы ультра-класса, соответствующие требованиям для получения гражданства Турции.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/58e/8mb48duu9jervwmzur7u29srd19zynce/350_350_1/WhatsApp Image 2023-04-28 at 14.39.11 (2).jpeg"]},
+{id:3,name:"Супер люксовые виллы в Дёшемеалты",area:"300 м²",rooms:"4+1",district:"Дёшемеалты",price:"1 635 000 €",desc:"Престижный район, вилла с дизайнерским ремонтом.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/429/350_350_1/Screenshot_4.jpg"]},
+{id:4,name:"Новая вилла 4+1 в Дёшемеалты",area:"300 м²",rooms:"4+1",district:"Дёшемеалты",price:"850 000 €",desc:"Готовая к проживанию вилла, тихий район.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/429/350_350_1/Screenshot_4.jpg"]},
+{id:5,name:"Жилой комплекс 3+1 в Хурма",area:"95 м²",rooms:"3+1",district:"Хурма",price:"220 000 €",desc:"Современный ЖК с бассейном, сауной, спортзалом.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/e57/ux71i8jz0x0b1ze622ab4px4vuywmk3e/350_350_1/8.jpg"]},
+{id:6,name:"Квартиры с видом в Аланье 1+1",area:"69 м²",rooms:"1+1",district:"Аланья",price:"270 000 €",desc:"Квартиры с видом на море, первая линия.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/c35/icimterzom2eldwifx1r6vrps6r80xyk/350_350_1/bg-home1-01-1-1.jpg"]},
+{id:7,name:"Земельный участок с видом на море",area:"231 000 м²",rooms:"—",district:"Коньяалты",price:"18 000 000 €",desc:"Огромный участок под застройку.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/308/350_350_1/zemelnyy-uchastok-v-antalii-net-analogov-.jpg"]},
+{id:8,name:"Торговая улица — магазин в центре Аланьи",area:"120 м²",rooms:"2 зала",district:"Аланья",price:"750 000 €",desc:"Готовый бизнес в туристической зоне.",imgs:["https://www.eturkey.ru/upload/resize_cache/iblock/fb0/350_350_1/vysokoklassnye-kvartiry-1-1-s-otlichnoy-planirovkoy.jpg"]}
+];
+let id=new URLSearchParams(location.search).get('id');
+let item=details.find(p=>p.id==id);
+if(item){
+    let gallery=item.imgs.map(img=>`<img src="${img}" loading="lazy">`).join('');
+    document.getElementById('detailContainer').innerHTML=`
+        <div class="detail-card"><img src="${item.imgs[0]}" class="detail-img"><div class="detail-body">
+            <div class="detail-title">${item.name}</div><div class="detail-price">${item.price}</div>
+            <div><span class="spec-item">📐 ${item.area}</span><span class="spec-item">🛏 ${item.rooms}</span><span class="spec-item">📍 ${item.district}</span></div>
+            <p style="margin:20px 0">${item.desc}</p><div class="gallery">${gallery}</div>
+            <button class="btn-g" onclick="location.href='index.html#contactSection'">📞 Записаться на просмотр</button>
+        </div></div>`;
+} else document.getElementById('detailContainer').innerHTML='<div style="text-align:center;padding:60px">Объект не найден</div>';
+
+function smoothScrollToElement(element) {
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+if (window.location.hash) {
+    setTimeout(() => {
+        const targetId = window.location.hash.substring(1);
+        const target = document.getElementById(targetId);
+        if (target) smoothScrollToElement(target);
+    }, 100);
+}
+const consultBtn = document.querySelector('.nav-btn');
+if (consultBtn) {
+    consultBtn.addEventListener('click', (e) => {
+        window.location.href = 'index.html#contactSection';
+    });
+} 
+</script>
+</body>
+</html>
