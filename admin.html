@@ -377,33 +377,8 @@ async function saveProps(arr){
 }
 
 
-function doLogin(){
-  var l = document.getElementById('loginInput').value.trim();
-  var p = document.getElementById('passInput').value;
-  var err = document.getElementById('loginErr');
-  if(l === CREDS.login && p === CREDS.pass){
-    sessionStorage.setItem('et_admin', '1');
-    sessionStorage.setItem('et_user', l);
-    err.classList.remove('show');
-    document.getElementById('loginWrap').style.display = 'none';
-    document.getElementById('adminWrap').classList.add('show');
-    document.getElementById('tbUser').textContent = l;
-    initAdmin();
-  } else {
-    err.classList.add('show');
-    document.getElementById('passInput').value = '';
-    document.getElementById('passInput').focus();
-  }
-}
 
-function doLogout(){
-  sessionStorage.removeItem('et_admin');
-  sessionStorage.removeItem('et_user');
-  document.getElementById('adminWrap').classList.remove('show');
-  document.getElementById('loginWrap').style.display = 'flex';
-  document.getElementById('loginInput').value = '';
-  document.getElementById('passInput').value = '';
-}
+
 
 // Check session
 if(sessionStorage.getItem('et_admin') === '1'){
