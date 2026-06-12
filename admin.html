@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Админ панель | eturkey.ru</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#C9A84C;--gold2:#F0D080;--dark:#0A0C10;--dark2:#12151C;--dark3:#1A1F2B;--light:#F8F4EE;--muted:rgba(248,244,238,0.55);--border:rgba(201,168,76,0.15);--red:#e74c3c;--green:#27ae60}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--light);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--dark);position:relative;overflow:hidden}
+.login-wrap::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.04) 1px,transparent 1px);background-size:56px 56px;transform:perspective(700px) rotateX(28deg) translateY(12%);transform-origin:50% 0;opacity:.6}
+.login-box{background:var(--dark3);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:400px;position:relative;z-index:2;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px}
+.login-logo-box{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000}
+.login-logo-text{font-size:20px;font-weight:600;color:var(--light)}
+.login-logo-text span{color:var(--gold)}
+.login-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-weight:600;margin-bottom:7px}
+.form-group input{width:100%;background:var(--dark2);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px 15px;color:var(--light);font-size:14px;font-family:inherit;outline:none;transition:border-color .3s}
+.form-group input:focus{border-color:rgba(201,168,76,.5)}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;transition:transform .2s,box-shadow .2s}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.35)}
+.login-err{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:#e74c3c;border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;text-align:center}
+.login-err.show{display:block}
+
+/* ADMIN PANEL */
+.admin-wrap{display:none;min-height:100vh;flex-direction:column}
+.admin-wrap.show{display:flex}
+
+/* TOPBAR */
+.topbar{background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tb-logo{display:flex;align-items:center;gap:10px}
+.tb-logo-box{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#000}
+.tb-logo-text{font-size:16px;font-weight:600}
+.tb-logo-text span{color:var(--gold)}
+.tb-badge{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.tb-right{display:flex;align-items:center;gap:14px}
+.tb-user{font-size:13px;color:var(--muted)}
+.tb-logout{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:7px 16px;border-radius:7px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:all .25s}
+.tb-logout:hover{border-color:var(--red);color:var(--red)}
+
+/* MAIN CONTENT */
+.admin-main{flex:1;padding:36px 32px;max-width:1200px;margin:0 auto;width:100%}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px}
+.admin-title{font-size:22px;font-weight:700}
+.admin-title span{color:var(--gold)}
+.btn-add{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:8px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px;transition:transform .2s,box-shadow .2s}
+.btn-add:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(201,168,76,.35)}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.astat{background:var(--dark3);border:1px solid rgba(255,255,255,.05);border-radius:13px;padding:20px 22px}
+.astat-num{font-size:28px;font-weight:700;color:var(--gold);line-height:1}
+.astat-label{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* SEARCH BAR */
+.admin-search{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.admin-search input,.admin-search select{background:var(--dark3);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 14px;color:var(--light);font-size:13.5px;font-family:inherit;outline:none;transition:border-color .3s}
+.admin-search input{flex:1;min-width:200px}
+.admin-search input:focus,.admin-search select:focus{border-color:rgba(201,168,76,.45)}
+.admin-search select option{background:var(--dark3)}
+
+/* PROPERTY TABLE */
+.prop-table-wrap{background:var(--dark3);border:1px solid rgba(255,255,255,.05);border-radius:16px;overflow:hidden}
+.prop-table{width:100%;border-collapse:collapse}
+.prop-table th{padding:13px 18px;font-size:11px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-weight:600;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2)}
+.prop-table td{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13.5px;vertical-align:middle}
+.prop-table tr:last-child td{border-bottom:none}
+.prop-table tr:hover td{background:rgba(255,255,255,.02)}
+.prop-img-cell{width:64px;height:48px;border-radius:8px;overflow:hidden;background:var(--dark2);flex-shrink:0}
+.prop-img-cell img{width:100%;height:100%;object-fit:cover}
+.prop-name-cell{font-weight:600;font-size:13.5px;line-height:1.4}
+.prop-district{font-size:11.5px;color:var(--muted);margin-top:3px}
+.badge-sale{background:rgba(201,168,76,.9);color:#000;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700}
+.badge-inv{background:rgba(41,130,255,.85);color:#fff;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700}
+.badge-cat{background:rgba(255,255,255,.07);color:var(--muted);padding:3px 10px;border-radius:100px;font-size:10px}
+.btn-edit{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:6px 13px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .25s}
+.btn-edit:hover{background:rgba(201,168,76,.2)}
+.btn-del{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);color:#e74c3c;padding:6px 13px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .25s}
+.btn-del:hover{background:rgba(231,76,60,.18)}
+.action-btns{display:flex;gap:7px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal{background:var(--dark3);border-radius:20px;border:1px solid var(--border);width:100%;max-width:560px;animation:fadeUp .3s ease;position:relative;margin:auto}
+.modal-header{padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:18px;font-weight:700}
+.modal-x{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;transition:color .25s}
+.modal-x:hover{color:var(--light)}
+.modal-body{padding:20px 28px 28px}
+.fg{margin-bottom:15px}
+.fg label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-weight:600;margin-bottom:7px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--dark2);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:11px 14px;color:var(--light);font-size:13.5px;font-family:inherit;outline:none;transition:border-color .3s;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:rgba(201,168,76,.45)}
+.fg select option{background:var(--dark2)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;padding:0 28px 24px}
+.btn-cancel{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:10px 22px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;transition:all .25s}
+.btn-cancel:hover{border-color:var(--muted)}
+.btn-save{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;padding:10px 28px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .2s}
+.btn-save:hover{transform:translateY(-2px)}
+.img-preview{width:100%;height:140px;border-radius:8px;overflow:hidden;background:var(--dark2);margin-top:8px;display:flex;align-items:center;justify-content:center;font-size:40px;border:1px solid rgba(255,255,255,.06)}
+.img-preview img{width:100%;height:100%;object-fit:cover}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:12px 22px;font-size:13.5px;font-weight:600;z-index:99999;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;opacity:0;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-color:rgba(39,174,96,.4);color:#2ecc71}
+.toast.error{border-color:rgba(231,76,60,.4);color:#e74c3c}
+
+/* CONFIRM DIALOG */
+.confirm-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.confirm-ov.open{display:flex}
+.confirm-box{background:var(--dark3);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:360px;width:100%;text-align:center;animation:fadeUp .25s ease}
+.confirm-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.confirm-text{font-size:13.5px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.confirm-btns{display:flex;gap:10px;justify-content:center}
+.btn-confirm-no{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:9px 22px;border-radius:7px;font-size:13.5px;cursor:pointer;font-family:inherit}
+.btn-confirm-yes{background:var(--red);color:#fff;border:none;padding:9px 22px;border-radius:7px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+
+@media(max-width:700px){
+  .admin-main{padding:20px 16px}
+  .topbar{padding:0 16px}
+  .fg-row{grid-template-columns:1fr}
+  .prop-table th:nth-child(1),.prop-table td:nth-child(1){display:none}
+  .prop-table th:nth-child(4),.prop-table td:nth-child(4){display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-box">ET</div>
+      <div class="login-logo-text">e<span>turkey</span>.ru</div>
+    </div>
+    <div class="login-title">Админ панель</div>
+    <div class="login-sub">Кириңиз — бул бөлүм жалгыз авторизацияланган колдонуучуга арналган</div>
+    <div class="form-group">
+      <label>Логин</label>
+      <input type="text" id="loginInput" placeholder="Email" type="email" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" id="passInput" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">🔐 Кириш</button>
+    <div class="login-err" id="loginErr">Логин же пароль туура эмес</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-wrap" id="adminWrap">
+  <div class="topbar">
+    <div class="tb-logo">
+      <div class="tb-logo-box">ET</div>
+      <div class="tb-logo-text">e<span>turkey</span>.ru</div>
+      <div class="tb-badge">ADMIN</div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-user" id="tbUser"></div>
+      <button class="tb-logout" onclick="doLogout()">Чыгуу</button>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    <div class="admin-header">
+      <div class="admin-title">Объекттер <span>башкаруу</span></div>
+      <button class="btn-add" onclick="openModal()">+ Жаңы объект кошуу</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="astat"><div class="astat-num" id="statTotal">0</div><div class="astat-label">Жалпы объект</div></div>
+      <div class="astat"><div class="astat-num" id="statVilla">0</div><div class="astat-label">Дома и виллы</div></div>
+      <div class="astat"><div class="astat-num" id="statApt">0</div><div class="astat-label">Квартиры</div></div>
+      <div class="astat"><div class="astat-num" id="statOther">0</div><div class="astat-label">Башка</div></div>
+    </div>
+
+    <div class="admin-search">
+      <input type="text" id="searchInput" placeholder="🔍 Аты же районы боюнча издөө..." oninput="renderTable()">
+      <select id="filterCat" onchange="renderTable()">
+        <option value="">Баары</option>
+        <option value="Дома и виллы">Дома и виллы</option>
+        <option value="Квартиры">Квартиры</option>
+        <option value="Земельные участки">Земельные участки</option>
+        <option value="Коммерческая недвижимость">Коммерческая</option>
+      </select>
+    </div>
+
+    <div class="prop-table-wrap">
+      <table class="prop-table">
+        <thead>
+          <tr>
+            <th>Сурөт</th>
+            <th>Аталышы</th>
+            <th>Баа</th>
+            <th>Категория</th>
+            <th>Район</th>
+            <th>Статус</th>
+            <th>Аракет</th>
+          </tr>
+        </thead>
+        <tbody id="propTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">Объект табылган жок</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-ov" id="modalOv">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Жаңы объект кошуу</div>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Объекттин аталышы</label>
+        <input type="text" id="fName" placeholder="Мис: Вилла 4+1 в Коньяалты">
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Категория</label>
+          <select id="fCat">
+            <option value="Дома и виллы">Дома и виллы</option>
+            <option value="Квартиры">Квартиры</option>
+            <option value="Земельные участки">Земельные участки</option>
+            <option value="Коммерческая недвижимость">Коммерческая</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Статус</label>
+          <select id="fBadge">
+            <option value="Продажа">Продажа</option>
+            <option value="Инвестиции">Инвестиции</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Баа (€)</label>
+          <input type="text" id="fPrice" placeholder="Мис: 750 000 €">
+        </div>
+        <div class="fg">
+          <label>Район</label>
+          <input type="text" id="fDistrict" placeholder="Мис: Коньяалты">
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Бөлмө</label>
+          <input type="text" id="fRooms" placeholder="Мис: 3+1">
+        </div>
+        <div class="fg">
+          <label>Аянты</label>
+          <input type="text" id="fArea" placeholder="Мис: 150 м²">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Сурөт URL</label>
+        <input type="text" id="fImg" placeholder="https://..." oninput="previewImg()">
+        <div class="img-preview" id="imgPreview"><span>🏠</span></div>
+      </div>
+      <div class="fg">
+        <label>Описание</label>
+        <textarea id="fDesc" rows="3" placeholder="Объект жөнүндө кыскача маалымат..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Жокко чыгаруу</button>
+      <button class="btn-save" onclick="saveProp()">💾 Сактоо</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-ov" id="confirmOv">
+  <div class="confirm-box">
+    <div class="confirm-title">Өчүрүүнү ырастайсызбы?</div>
+    <div class="confirm-text">Бул объект тизмеден биротоло өчүрүлөт. Кайтарып болбойт.</div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-no" onclick="closeConfirm()">Жок, калтыруу</button>
+      <button class="btn-confirm-yes" id="confirmYesBtn">Ооба, өчүр</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const _app = initializeApp({
+  apiKey: "AIzaSyCT2zX4TjkBOb0H_1gY7fXdzSoQi8jszbo",
+  authDomain: "eturkey-e9718.firebaseapp.com",
+  projectId: "eturkey-e9718",
+  storageBucket: "eturkey-e9718.firebasestorage.app",
+  messagingSenderId: "449136453443",
+  appId: "1:449136453443:web:bd58935bd242b16b48f1f6"
+});
+const _db = getFirestore(_app);
+const _auth = getAuth(_app);
+
+const DEFAULT_PROPS = [
+  {id:1,name:'Эксклюзивная вилла 8+2 в Коньяалты',cat:'Дома и виллы',badge:'Продажа',price:'3 250 000 €',priceNum:3250000,district:'Коньяалты',rooms:'8+2',area:'750 м²',desc:'Роскошная вилла с великолепной отделкой в престижном районе Коньяалты.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/f54/1000_300_1/photo1658496515%20(1).jpeg'},
+  {id:2,name:'Роскошные виллы в Анталье (LOTUS)',cat:'Дома и виллы',badge:'Инвестиции',price:'507 640 €',priceNum:507640,district:'Коньяалты',rooms:'3+1',area:'183 м²',desc:'Проект LOTUS — современные виллы с биологическим бассейном.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/d97/dixct69wmkyodu2eol3cn1solizhvb8c/350_350_1/LOTUS%20ANTALYA0.jpg'},
+  {id:3,name:'Люксовые виллы — подходит под гражданство',cat:'Дома и виллы',badge:'Продажа',price:'1 600 000 €',priceNum:1600000,district:'Коньяалты',rooms:'5+1',area:'675 м²',desc:'Элитные виллы, подходящие для оформления гражданства Турции.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/58e/8mb48duu9jervwmzur7u29srd19zynce/350_350_1/WhatsApp%20Image%202023-04-28%20at%2014.39.11%20(2).jpeg'},
+  {id:4,name:'Супер люксовые виллы в Дёшемеалты',cat:'Дома и виллы',badge:'Продажа',price:'1 635 000 €',priceNum:1635000,district:'Дёшемеалты',rooms:'4+1',area:'300 м²',desc:'Эксклюзивные виллы в зелёном горном районе.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/429/350_350_1/Screenshot_4.jpg'},
+  {id:5,name:'Жилой комплекс 3+1 в Анталье, Хурма',cat:'Квартиры',badge:'Продажа',price:'220 000 €',priceNum:220000,district:'Хурма',rooms:'3+1',area:'90 м²',desc:'Современный жилой комплекс в районе Хурма.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/e57/ux71i8jz0x0b1ze622ab4px4vuywmk3e/350_350_1/8.jpg'},
+  {id:6,name:'Квартиры с видом в Аланье',cat:'Квартиры',badge:'Продажа',price:'от 270 000 €',priceNum:270000,district:'Аланья',rooms:'1+1–3+1',area:'69–252 м²',desc:'Роскошный комплекс с панорамным видом на море.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/c35/icimterzom2eldwifx1r6vrps6r80xyk/350_350_1/bg-home1-01-1-1.jpg'},
+  {id:7,name:'Земельный участок с видом на море',cat:'Земельные участки',badge:'Инвестиции',price:'18 000 000 €',priceNum:18000000,district:'Коньяалты',rooms:'—',area:'231 000 м²',desc:'Уникальный участок 23.1 га с видом на море, город и горы.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/308/350_350_1/zemelnyy-uchastok-v-antalii-net-analogov-.jpg'},
+  {id:8,name:'Апартаменты для бизнеса в Аланье',cat:'Коммерческая недвижимость',badge:'Продажа',price:'7 000 000 €',priceNum:7000000,district:'Аланья',rooms:'2 зала',area:'60 м²',desc:'Коммерческие апартаменты в центре Аланьи.',img:'https://www.eturkey.ru/upload/resize_cache/iblock/fb0/350_350_1/vysokoklassnye-kvartiry-1-1-s-otlichnoy-planirovkoy.jpg'}
+];
+
+let _props = [];
+
+async function _loadProps(){
+  try {
+    const snap = await getDocs(collection(_db,'properties'));
+    let arr = [];
+    snap.forEach(d => arr.push({...d.data()}));
+    arr.sort((a,b)=>(a.id||0)-(b.id||0));
+    if(arr.length === 0){
+      const batch = writeBatch(_db);
+      DEFAULT_PROPS.forEach(p => batch.set(doc(_db,'properties',String(p.id)), p));
+      await batch.commit();
+      return JSON.parse(JSON.stringify(DEFAULT_PROPS));
+    }
+    return arr;
+  } catch(e){ return JSON.parse(JSON.stringify(DEFAULT_PROPS)); }
+}
+
+async function _saveOne(prop){
+  await setDoc(doc(_db,'properties',String(prop.id)), prop);
+}
+
+async function _deleteOne(id){
+  await deleteDoc(doc(_db,'properties',String(id)));
+}
+
+function _getProps(){ return _props; }
+function _saveProps(arr){ _props = arr; }
+function _nextId(arr){ return arr.length ? Math.max(...arr.map(p=>p.id||0))+1 : 1; }
+
+
+
+async function initAdmin(){
+  showToast('⏳ Жүктөлүүдө...');
+  _props = await _loadProps();
+  renderTable();
+  showToast('✅ Даяр!');
+}
+
+function doLogin(){
+  var email = document.getElementById('loginInput').value.trim();
+  var pass = document.getElementById('passInput').value;
+  var err = document.getElementById('loginErr');
+  signInWithEmailAndPassword(_auth, email, pass)
+    .catch(()=>{ err.classList.add('show'); });
+}
+
+function doLogout(){ signOut(_auth); }
+
+onAuthStateChanged(_auth, function(user){
+  if(user){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('adminWrap').classList.add('show');
+    document.getElementById('tbUser').textContent = user.email;
+    initAdmin();
+  } else {
+    document.getElementById('loginWrap').style.display='';
+    document.getElementById('adminWrap').classList.remove('show');
+  }
+});
+
+window.doLogin = doLogin;
+window.saveProp = saveProp;
+window.confirmDel = confirmDel;
+window.closeModal = closeModal;
+window.closeConfirm = closeConfirm;
+window.editProp = editProp;
+window.doConfirmDel = doConfirmDel;
+window.previewImg = previewImg;
+window.loadLocalImg = loadLocalImg;
+window.markDirty = markDirty;
+window.doLogout = doLogout;
+window.filterTable = filterTable;
+window.openAddModal = function(){ editingId=null; openModal({}); };
+</script>
+</body>
+</html>
